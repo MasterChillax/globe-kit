@@ -1,9 +1,13 @@
 name: ci
+# A tag push and its main push carry the same SHA — running both doubled every release (10 SHAs → 20 runs);
+# the main run is the gate, and a release is cut only from a green main SHA.
 on:
   pull_request:
   push:
     branches: [main]
-    tags: ['v*']
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   gate:
     runs-on: ubuntu-latest
