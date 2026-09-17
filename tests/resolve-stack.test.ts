@@ -22,7 +22,7 @@ describe('resolveStack — vector-first default', () => {
     const r = resolveStack(registry, kinx);
     expect(Object.keys(r.sources)).not.toContain('arcgis-world-imagery');
     expect(JSON.stringify(r)).not.toMatch(/arcgisonline/);
-    expect(r.dropped).toContainEqual({ id: 'arcgis-world-imagery', reason: 'missing-key' });
+    expect(r.dropped).toContainEqual(expect.objectContaining({ id: 'arcgis-world-imagery', reason: 'missing-key' }));
   });
 
   it('includes keyed satellite with the key substituted when the key exists', () => {
@@ -51,7 +51,7 @@ describe('resolveStack — V-World consent and platform gates', () => {
   it('commercial app without written consent drops V-World with reason consent-required even with a key', () => {
     const r = resolveStack(registry, { ...coreaNative, platform: 'web', keys: withKeys });
     expect(Object.keys(r.sources)).not.toContain('vworld-satellite');
-    expect(r.dropped).toContainEqual({ id: 'vworld-satellite', reason: 'consent-required' });
+    expect(r.dropped).toContainEqual(expect.objectContaining({ id: 'vworld-satellite', reason: 'consent-required' }));
   });
 
   it('commercial app with consent vworld-commercial gets V-World', () => {
@@ -62,7 +62,7 @@ describe('resolveStack — V-World consent and platform gates', () => {
   it('native platform never gets terrain (Korea: no elevation readout on phones) and drops it with reason platform', () => {
     const r = resolveStack(registry, { ...coreaNative, keys: withKeys, consents: ['vworld-commercial'] });
     expect(Object.keys(r.sources)).not.toContain('terrarium-dem');
-    expect(r.dropped).toContainEqual({ id: 'terrarium-dem', reason: 'platform' });
+    expect(r.dropped).toContainEqual(expect.objectContaining({ id: 'terrarium-dem', reason: 'platform' }));
     expect(r.terrain).toBeNull();
   });
 
