@@ -59,6 +59,9 @@ export interface ResolvedStack {
    * so with the shipped registry this is empty — apps append only their own credits (e.g. cable data).
    */
   customAttribution: string[];
+  /** Reserve vector styles the app may switch to (style-URL override) — the key rides per request, and the
+   * app must then credit `attribution` itself because the fallback is not in `customAttribution`. */
+  styleFallbacks: { id: string; styleUrl: string; keyRequired: string | null; attribution: string }[];
   included: string[];
   dropped: { id: string; reason: DropReason }[];
 }
@@ -83,7 +86,7 @@ function gate(p: Provider, profile: AppProfile, registry: Registry): DropReason 
 
 /** Pure: registry + profile → the exact sources/layers an app may ship. Nothing else decides what is on the map. */
 export function resolveStack(registry: Registry, profile: AppProfile): ResolvedStack {
-  const out: ResolvedStack = { styleUrl: '', sources: {}, layers: [], terrain: null, attribution: [], customAttribution: [], included: [], dropped: [] };
+  const out: ResolvedStack = { styleUrl: '', sources: {}, layers: [], terrain: null, attribution: [], customAttribution: [], styleFallbacks: [], included: [], dropped: [] };
   const rasters: { order: number; p: Provider }[] = [];
   for (const p of registry.providers) {
     const reason = gate(p, profile, registry);
@@ -92,6 +95,7 @@ export function resolveStack(registry: Registry, profile: AppProfile): ResolvedS
     if (!out.attribution.includes(p.attribution)) out.attribution.push(p.attribution);
     const key = p.keyRequired ? profile.keys(p.keyRequired) : undefined;
     if (p.kind === 'vector-style') {
+      if (p.fallback) { out.styleFallbacks.push({ id: p.id, styleUrl: p.styleUrl!, keyRequired: p.keyRequired, attribution: p.attribution }); continue; }
       out.styleUrl = p.styleUrl!;
       if (!p.attributionInStyle) out.customAttribution.push(p.attribution);
       continue;

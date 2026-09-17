@@ -26,7 +26,10 @@ export interface Provider {
   platforms: Platform[];
   cacheable: boolean;
   keyRequired: string | null;
-  keyPlacement?: 'query' | 'path';
+  /** 'request': the key rides on every request (app transformRequest), never in the registry URL. */
+  keyPlacement?: 'query' | 'path' | 'request';
+  /** A vector style kept as a switch-over reserve: never the default styleUrl, listed in styleFallbacks. */
+  fallback?: boolean;
   styleUrl?: string;
   layerId?: string;
   tiles?: string[];
@@ -57,6 +60,6 @@ export interface Registry {
   korea: {
     noElevationReadoutOnNative: boolean;
     publicDemMaxResolutionMetres: number;
-    labelFixtures: { name: string; lng: number; lat: number; zoom: number; expect: string }[];
+    labelFixtures: { name: string; lng: number; lat: number; zoom: number; expect: string; sourceLayer?: string; note?: string }[];
   };
 }

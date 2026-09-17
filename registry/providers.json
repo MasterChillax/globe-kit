@@ -23,6 +23,26 @@
       "keyRequired": null
     },
     {
+      "id": "carto-dark-matter",
+      "kind": "vector-style",
+      "role": "basemap",
+      "fallback": true,
+      "styleUrl": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+      "attribution": "© CARTO © OpenStreetMap contributors",
+      "license": {
+        "name": "CARTO Basemap Services terms (2026-08-26) — free with the customer's own API key (§3.b), 5M tiles/month (§12.c), no server-side cache, credit both CARTO and OSM (§13.a)",
+        "url": "https://carto.com/legal/basemap-terms",
+        "usage": ["personal", "internal", "commercial"],
+        "exposure": ["private", "public"],
+        "verified": "2026-09-17",
+        "note": "백업 전용(소유자 결정 2026-09-17): 기본은 openfreemap-dark, 전환은 스타일 URL 스위치. 키는 요청마다 붙는다(앱 transformRequest — corea withCartoKey) 라 스타일 URL 엔 키가 없다. 상업 배제 조항은 읽은 범위(§3.b·§12.c·§13.a)에서 미발견 — 원문 재확인 항목"
+      },
+      "platforms": ["web", "native"],
+      "cacheable": false,
+      "keyRequired": "CARTO_API_KEY",
+      "keyPlacement": "request"
+    },
+    {
       "id": "gibs-bluemarble",
       "kind": "raster",
       "role": "overview",
@@ -173,7 +193,6 @@
   "denied": [
     { "host": "server.arcgisonline.com", "reason": "keyless Esri World_Imagery tiles are outside the ArcGIS terms — use arcgis-world-imagery with ARCGIS_API_KEY" },
     { "host": "services.arcgisonline.com", "reason": "same as server.arcgisonline.com" },
-    { "host": "basemaps.cartocdn.com", "reason": "CARTO basemap terms (2026-08-26) require the customer's own API key; replaced by openfreemap-dark" },
     { "host": "map1.vis.earthdata.nasa.gov", "reason": "legacy GIBS host and 2012 product — use gibs.earthdata.nasa.gov" },
     { "host": "tiles.maps.eox.at", "reason": "Sentinel-2 cloudless is CC BY-NC-SA — not for commercial apps" },
     { "host": "tile.googleapis.com", "reason": "Google Map Tiles: no caching, visualisation only, Korea not covered for 3D — excluded from the standard" }
@@ -186,8 +205,8 @@
     "noElevationReadoutOnNative": true,
     "publicDemMaxResolutionMetres": 90,
     "labelFixtures": [
-      { "name": "동해", "lng": 131.0, "lat": 37.5, "zoom": 4, "expect": "동해" },
-      { "name": "독도", "lng": 131.87, "lat": 37.24, "zoom": 9, "expect": "독도" }
+      { "name": "동해", "lng": 134.0, "lat": 39.5, "zoom": 5, "expect": "동해", "sourceLayer": "water_name", "note": "Point feature (class sea) with name:ko — OpenFreeMap dark draws only LineString water names, so apps add seaNameLayerFrom(water_name). Verified 2026-09-17 via querySourceFeatures (kinx#66)." },
+      { "name": "독도", "lng": 131.87, "lat": 37.24, "zoom": 9, "expect": "독도리", "sourceLayer": "place", "note": "village label; the island name itself needs z10+" }
     ]
   }
 }

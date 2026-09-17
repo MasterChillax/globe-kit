@@ -10,7 +10,8 @@
 |---|---|
 | 키 없는 소스는 배포되지 않는다 | `resolveStack()` 이 `keyRequired` 공급자를 키가 없으면 `dropped:[{id, reason:'missing-key'}]` 로 뺀다 |
 | 라이선스 범위 밖 소스는 배포되지 않는다 | `license.usage/exposure/platforms` 와 앱 프로필(usage·exposure·platform)을 대조, 영리 동의(`consentId`)는 서면 기록이 있어야 통과 |
-| 금지 호스트는 어디에도 못 들어간다 | `registry.denied`(무키 Esri·CARTO·구 GIBS 호스트·EOX NC·Google Map Tiles) — 리졸버는 절대 방출하지 않고 `validateStyleMin()` 이 어떤 스타일에서든 잡는다. 스타일 URL 오버라이드도 금지 호스트면 throw |
+| 금지 호스트는 어디에도 못 들어간다 | `registry.denied`(무키 Esri·구 GIBS 호스트·EOX NC·Google Map Tiles) — 리졸버는 절대 방출하지 않고 `validateStyleMin()` 이 어떤 스타일에서든 잡는다. 스타일 URL 오버라이드도 금지 호스트면 throw. CARTO 는 v0.2.2 부터 **키 있는 백업 공급자**(`carto-dark-matter`, `CARTO_API_KEY`) — 키 없이 오버라이드하면 throw |
+| 라벨은 어느 화면에서나 한국어 먼저 | 소유자 결정(2026-09-17): `labelTextField()` = `coalesce(name:ko, name:latin, name)`. `localizeLabels(style)` 로 스타일 객체 전체에, 라이브 맵엔 `setLayoutProperty(id, 'text-field', labelTextField())`. 바다 이름(동해)은 OFM dark 가 점 피처를 안 그리므로 `seaNameLayerFrom(water_name 레이어)` 로 Point 레이어를 하나 추가 |
 | 표기(attribution)가 빠지지 않는다 | 레지스트리 항목마다 필수, 리졸버가 `attribution[]` 로 모으고 `buildNotices()` 가 THIRD_PARTY_NOTICES 를 생성 |
 | 라벨이 영상 밑에 깔리지 않는다 | `firstSymbolLayerId()` / `insertUnderLabels()` — 벡터 스타일의 **첫** symbol 레이어 앞에 래스터를 끼운다 |
 | 한국 제약 | native(폰) 프로필은 `projection/sky/terrain` 을 방출하지 않고 등고선·표고 레이어를 금지(별표1). V-World 는 표출 전용·`cacheable:false`·영리는 동의 필요 |
@@ -42,6 +43,8 @@ const stack = resolveStack(registry, {
 - 위성/야간 래스터가 **실제로 그려지는 동안**(`rasterDrawnAt(layer, map.getZoom())`)은 `fillsAboveAnchor(map.getStyle().layers, anchor)` 가 돌려주는 fill 레이어(OFM dark 의 `building`·aeroway — 첫 symbol 뒤에 오는 불투명 fill)를 `visibility: none` 으로 숨긴다. 안 숨기면 z12+ 도시에서 영상이 검은 블록에 덮인다. 도로선·라벨은 그대로 둔다(하이브리드).
 - **표기**: `AttributionControl` 의 `customAttribution` 에는 `stack.customAttribution`(+ 앱 고유 크레딧)만 넘긴다 — 현 레지스트리에선 빈 배열이다. 래스터 크레딧은 소스 spec 에 실려 MapLibre 가 **켜진 소스만** 표기하고, OpenFreeMap 은 자기 TileJSON 이 표기한다(`attributionInStyle`). `stack.attribution` 전체를 join 하면 OFM 이 두 번, 꺼진 야간·지형 크레딧이 항상 붙는다. `stack.attribution` 은 THIRD_PARTY_NOTICES(`buildNotices`) 용이다.
 - `validateStyleMin` 의 attribution·tileSize 규칙은 **레이어가 실제로 그리는 소스**에만 건다(OFM dark 에는 참조 없는 래스터 소스 `ne2_shaded` 가 있다). 금지 호스트·키 리터럴 규칙은 참조 여부와 무관하게 전 소스에 건다.
+- **백업 스타일**: `stack.styleFallbacks`(현재 `carto-dark-matter`, 키 있을 때만) — 기본 `styleUrl` 은 항상 OpenFreeMap. 앱이 스위치(`NEXT_PUBLIC_BASEMAP_STYLE_URL` 등)로 넘길 땐 `resolveBasemapStyleUrl(registry, override, profile.keys)` 가 키 없는 CARTO 를 거부하고, 키는 요청마다 앱이 붙이며(`keyPlacement: 'request'`), 그 공급자의 `attribution` 을 앱이 직접 표기한다(`customAttribution` 엔 안 들어 있다).
+- **동해 픽스처**: `registry.korea.labelFixtures` 의 동해는 (134.0, 39.5) z5 `water_name` 소스 피처(`name:ko`) 기준이다 — `querySourceFeatures` 로 데이터를, `seaNameLayerFrom` 을 붙인 뒤 `queryRenderedFeatures` 로 표시를 검증한다. 독도는 z9 "독도리"(village).
 - 스크립트·테스트에서 다른 레지스트리 파일을 읽으려면 `import { loadRegistryFile } from '@masterchillax/globe-kit/node'`(node 전용). 레지스트리 JSON 자체는 `@masterchillax/globe-kit/registry` 로도 import 된다.
 - 정적 린트는 **자리표시자 키**로 만든 스택에 건다: `keysFrom({ ARCGIS_API_KEY: '{ARCGIS_API_KEY}', … })`. 실제 키가 든 런타임 URL 은 `key-literal` 에 걸리는 게 맞다(키가 스타일 픽스처에 박히는 걸 막는 규칙).
 

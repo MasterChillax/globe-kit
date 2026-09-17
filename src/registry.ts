@@ -23,7 +23,7 @@ export function assertRegistry(value: unknown): Registry {
     if (p.kind === 'vector-style' && !p.styleUrl) throw new Error(`globe-kit registry: ${p.id} needs styleUrl`);
     if (!p.attribution) throw new Error(`globe-kit registry: ${p.id} needs attribution`);
     if (p.kind === 'raster' && !p.tileSize) throw new Error(`globe-kit registry: ${p.id} raster needs tileSize`);
-    if (p.keyRequired && !(p.tiles ?? []).some((t) => t.includes(`{${p.keyRequired}}`))) {
+    if (p.keyRequired && p.keyPlacement !== 'request' && !(p.tiles ?? []).some((t) => t.includes(`{${p.keyRequired}}`))) {
       throw new Error(`globe-kit registry: ${p.id} declares keyRequired ${p.keyRequired} but no tile URL carries the {${p.keyRequired}} placeholder`);
     }
   }

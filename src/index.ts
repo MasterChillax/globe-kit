@@ -10,3 +10,5 @@ export { resolveBasemapStyleUrl } from './style-url';
 export { validateStyleMin } from './validate-style';
 export type { StyleLike, Violation, Rule, ValidateOptions } from './validate-style';
 export { buildNotices } from './licenses';
+export { LABEL_PREFERENCE, labelTextField, localizeLabels, seaNameLayerFrom } from './labels';
+export type { LayerLike, SymbolLayerSpec, Expression } from './labels';

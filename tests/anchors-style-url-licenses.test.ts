@@ -39,8 +39,11 @@ describe('style-url — provider switch', () => {
   it('a real override is used verbatim after trimming', () => {
     expect(resolveBasemapStyleUrl(registry, ' https://example.test/style.json ')).toBe('https://example.test/style.json');
   });
-  it('an override pointing at a denied host is refused (throws) so a bad env cannot smuggle CARTO back', () => {
-    expect(() => resolveBasemapStyleUrl(registry, 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json')).toThrow(/denied/);
+  it('an override pointing at a denied host is refused (throws) so a bad env cannot smuggle keyless Esri back', () => {
+    expect(() => resolveBasemapStyleUrl(registry, 'https://server.arcgisonline.com/gl/style.json')).toThrow(/denied/);
+  });
+  it('an override onto CARTO (keyed fallback since v0.2.2) is refused without CARTO_API_KEY', () => {
+    expect(() => resolveBasemapStyleUrl(registry, 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json')).toThrow(/CARTO_API_KEY/);
   });
 });
 
