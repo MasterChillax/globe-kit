@@ -10,9 +10,12 @@ const CARTO_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style
 
 // Owner decision 2026-09-17: labels are Korean first on every locale (동해, never "Sea of Japan").
 describe('v0.2.2 — label localisation (Korean-first policy)', () => {
-  test('labelTextField() is coalesce(name:ko, name:latin, name) by default and honours a custom preference', () => {
+  test('labelTextField() prefers name:ko, then a Hangul name, then name:latin, then name (v0.2.6); a custom preference is a plain coalesce', () => {
     expect(LABEL_PREFERENCE).toEqual(['name:ko', 'name:latin', 'name']);
-    expect(labelTextField()).toEqual(['coalesce', ['get', 'name:ko'], ['get', 'name:latin'], ['get', 'name']]);
+    const field = labelTextField();
+    expect(field[0]).toBe('case');
+    expect(JSON.stringify(field)).toContain('"name:ko"');
+    expect(JSON.stringify(field).indexOf('"name:latin"')).toBeGreaterThan(JSON.stringify(field).indexOf('"가"'));
     expect(labelTextField(['name:en', 'name'])).toEqual(['coalesce', ['get', 'name:en'], ['get', 'name']]);
   });
 

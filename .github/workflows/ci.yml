@@ -24,5 +24,6 @@ jobs:
       # No renderer dependency may ever enter this package: no maplibre-gl in dependencies, no import of it in src.
       # (Prose mentions in descriptions/comments are fine — the first version of this step matched those.)
       - run: |
-          node -e "const p=require('./package.json');const d=Object.keys({...p.dependencies,...p.devDependencies,...p.peerDependencies});if(d.some(n=>/maplibre/.test(n))){console.error('renderer dependency found:',d);process.exit(1)}"
+          # The renderer is maplibre-gl itself; the pure @maplibre/maplibre-gl-style-spec validator is allowed as a dev dependency.
+          node -e "const p=require('./package.json');const d=Object.keys({...p.dependencies,...p.devDependencies,...p.peerDependencies});if(d.some(n=>n==='maplibre-gl')){console.error('renderer dependency found:',d);process.exit(1)}"
           ! grep -rEq "from .maplibre-gl|require\(.maplibre-gl" src

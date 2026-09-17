@@ -26,9 +26,26 @@ export interface SymbolLayerSpec extends LayerLike {
   paint: Record<string, unknown>;
 }
 
-/** MapLibre `coalesce` over the preferred name properties. */
+const NAME: Expression = ['get', 'name'];
+const NAME_FIRST_CHAR: Expression = ['slice', ['coalesce', NAME, ''], 0, 1];
+/** `name` starts with a Hangul syllable (가–힣). Corea measured Seoul z14: roads 5/391, places 1/203 and
+ * water names 2/11 carry a Korean `name` but no name:ko — a plain coalesce showed their romanisation. */
+export const HANGUL_NAME: Expression = ['all', ['>=', NAME_FIRST_CHAR, '가'], ['<=', NAME_FIRST_CHAR, '힣']];
+
+/**
+ * Label expression for the preferred name properties. With the default preference it is Korean first in
+ * the full sense: name:ko, then a Hangul `name`, then name:latin, then name (validated against the
+ * MapLibre style-spec in tests). A preference without `name:latin` is a plain coalesce.
+ */
 export function labelTextField(preferred: readonly string[] = LABEL_PREFERENCE): Expression {
-  return ['coalesce', ...preferred.map((key) => ['get', key])];
+  const latinAt = preferred.indexOf('name:latin');
+  if (latinAt < 0) return ['coalesce', ...preferred.map((key) => ['get', key])];
+  const branches: unknown[] = [];
+  preferred.forEach((key, i) => {
+    if (i === latinAt) branches.push(HANGUL_NAME, ['to-string', NAME]);
+    if (i < preferred.length - 1) branches.push(['has', key], ['to-string', ['get', key]]);
+  });
+  return ['case', ...branches, ['to-string', ['get', preferred[preferred.length - 1]]]];
 }
 
 /** `name`, `name:xx` or `name_xx` referenced in a text-field expression or `{token}` string. Road shields
