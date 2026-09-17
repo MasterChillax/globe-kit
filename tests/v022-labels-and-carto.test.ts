@@ -52,7 +52,7 @@ describe('v0.2.2 — label localisation (Korean-first policy)', () => {
     expect(layer.layout['text-field']).toEqual(labelTextField());
     expect(layer.layout['symbol-placement']).toBe('point');
     expect(layer.layout['text-font']).toEqual(['Noto Sans Italic']);
-    expect(layer.paint).toEqual(template.paint);
+    expect(layer.paint).not.toEqual(template.paint); // v0.2.5: the template paint is river ink, unreadable on dark water
     expect(template.filter[2]).toEqual(['LineString', 'MultiLineString']); // template untouched
   });
 

@@ -1,6 +1,6 @@
 {
   "name": "@masterchillax/globe-kit",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "System-standard globe basemap policy: provider registry, license/key gate, stack resolver, label anchors, style lint. Pure TypeScript, no maplibre-gl dependency.",
   "license": "MIT",
   "type": "module",

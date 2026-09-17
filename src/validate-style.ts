@@ -30,6 +30,14 @@ function registeredHosts(registry: Registry): Set<string> {
   return hosts;
 }
 
+/** A provider's style pulls its tiles from sibling hosts (CARTO: tiles.basemaps.cartocdn.com under
+ * basemaps.cartocdn.com), so a registered host covers its subdomains — label-boundary only, never a suffix. */
+function isRegistered(host: string, known: Set<string>): boolean {
+  if (known.has(host)) return true;
+  for (const k of known) if (host.endsWith(`.${k}`)) return true;
+  return false;
+}
+
 /** Static lint of a style object: fails fast on what MapLibre would only report as a runtime ErrorEvent
  * (Mapbox-only sky props), on licence violations (denied hosts, leaked keys, missing attribution) and on
  * Korea/native policy (no globe/terrain root keys, no elevation readout layers). Pure, no I/O. */
@@ -50,7 +58,7 @@ export function validateStyleMin(style: StyleLike, registry: Registry, opts: Val
       if (reason) v.push({ rule: 'denied-host', where: `sources.${id}`, detail: `${hostOf(u)} — ${reason}` });
       if (KEY_LITERAL.test(u)) v.push({ rule: 'key-literal', where: `sources.${id}`, detail: 'a credential literal is embedded in the URL; use a {KEY} placeholder resolved at runtime' });
       const host = hostOf(u);
-      if (host && !reason && !known.has(host)) {
+      if (host && !reason && !isRegistered(host, known)) {
         const waiver = registry.waivers.find((w) => (host === w.host || host.endsWith(`.${w.host}`)) && w.app === opts.app);
         if (!waiver) v.push({ rule: 'unregistered-host', where: `sources.${id}`, detail: `${host} is not in the provider registry and has no waiver for app ${opts.app ?? '(unspecified)'}` });
         else if (waiver.expires < today) v.push({ rule: 'expired-waiver', where: `sources.${id}`, detail: `${host} waiver for ${waiver.app} expired ${waiver.expires} (${waiver.issue})` });
