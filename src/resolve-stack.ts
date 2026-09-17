@@ -63,7 +63,9 @@ export interface ResolvedStack {
    * app must then credit `attribution` itself because the fallback is not in `customAttribution`. */
   styleFallbacks: { id: string; styleUrl: string; keyRequired: string | null; attribution: string }[];
   included: string[];
-  dropped: { id: string; reason: DropReason }[];
+  /** Providers the profile could not ship, with kind/role so diagnostics can filter without a lookup table.
+   * Reserve styles (`fallback: true`) are never listed here — a missing fallback is not a missing feature. */
+  dropped: { id: string; reason: DropReason; kind: Provider['kind']; role: Provider['role'] }[];
 }
 
 /** Bottom → top drawing order for the standard raster stack. */
@@ -90,7 +92,10 @@ export function resolveStack(registry: Registry, profile: AppProfile): ResolvedS
   const rasters: { order: number; p: Provider }[] = [];
   for (const p of registry.providers) {
     const reason = gate(p, profile, registry);
-    if (reason) { out.dropped.push({ id: p.id, reason }); continue; }
+    if (reason) {
+      if (!p.fallback) out.dropped.push({ id: p.id, reason, kind: p.kind, role: p.role });
+      continue;
+    }
     out.included.push(p.id);
     if (!out.attribution.includes(p.attribution)) out.attribution.push(p.attribution);
     const key = p.keyRequired ? profile.keys(p.keyRequired) : undefined;

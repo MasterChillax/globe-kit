@@ -77,10 +77,10 @@ describe('v0.2.2 — CARTO as a keyed fallback style, not a denied host', () => 
     expect(carto).toMatchObject({ kind: 'vector-style', role: 'basemap', fallback: true, keyRequired: 'CARTO_API_KEY', keyPlacement: 'request', cacheable: false });
   });
 
-  test('without a CARTO key: OpenFreeMap is the style, carto is dropped as missing-key, no fallbacks', () => {
+  test('without a CARTO key: OpenFreeMap is the style, no fallbacks, and the reserve is not reported as dropped (v0.2.3)', () => {
     const s = resolveStack(registry, { ...corea, keys: () => undefined });
     expect(s.styleUrl).toBe('https://tiles.openfreemap.org/styles/dark');
-    expect(s.dropped).toContainEqual({ id: 'carto-dark-matter', reason: 'missing-key' });
+    expect(s.dropped.map((d) => d.id)).not.toContain('carto-dark-matter');
     expect(s.styleFallbacks).toEqual([]);
   });
 

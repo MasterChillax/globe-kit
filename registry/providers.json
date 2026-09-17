@@ -106,7 +106,7 @@
         "usage": ["personal", "internal", "commercial"],
         "exposure": ["private", "public"],
         "verified": "2026-09-17",
-        "note": "무키 server.arcgisonline.com 직접 타일은 ToS 밖(denied). 키는 referrer 바인딩"
+        "note": "무키 server.arcgisonline.com 직접 타일은 ToS 밖(denied). 키는 referrer 바인딩. 2026-09-17 Jarvis 실측: 가짜 토큰으로도 ibasemaps-api 가 실제 타일을 냈다(토큰 검증 느슨) — 킷은 토큰 유효성을 검증할 수 없고 라이선스 요건(자기 키)은 그대로다"
       },
       "platforms": ["web", "native"],
       "cacheable": false,
