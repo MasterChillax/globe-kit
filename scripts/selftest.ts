@@ -24,7 +24,8 @@ const injected: { rule: string; style: StyleLike; platform: 'web' | 'native' }[]
   { rule: 'mapbox-sky-prop', platform: 'web', style: { ...clean, sky: { 'sky-type': 'atmosphere' } } },
   { rule: 'denied-host', platform: 'web', style: { ...clean, sources: { ...clean.sources, x: { type: 'raster', tiles: ['https://basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png'], tileSize: 256, attribution: 'x' } } } },
   { rule: 'key-literal', platform: 'web', style: { ...clean, sources: { ...clean.sources, x: { type: 'raster', tiles: ['https://ibasemaps-api.arcgis.com/t/{z}/{y}/{x}?token=AAPKabcdefghijklmnopqrstuvwxyz0123456789'], tileSize: 256, attribution: 'x' } } } },
-  { rule: 'missing-attribution', platform: 'web', style: { ...clean, sources: { ...clean.sources, x: { type: 'raster', tiles: ['https://gibs.earthdata.nasa.gov/x/{z}/{y}/{x}.png'], tileSize: 256 } } } },
+  // The bare source must be drawn by a layer: display rules only apply to referenced sources (v0.2.0).
+  { rule: 'missing-attribution', platform: 'web', style: { ...clean, sources: { ...clean.sources, x: { type: 'raster', tiles: ['https://gibs.earthdata.nasa.gov/x/{z}/{y}/{x}.png'], tileSize: 256 } }, layers: [...clean.layers, { id: 'x-layer', type: 'raster', source: 'x' }] } },
   { rule: 'gibs-maxzoom', platform: 'web', style: { ...clean, sources: { ...clean.sources, x: { type: 'raster', tiles: ['https://gibs.earthdata.nasa.gov/x/{z}/{y}/{x}.png'], tileSize: 256, maxzoom: 10, attribution: 'x' } } } },
   { rule: 'native-root-key', platform: 'native', style: { ...clean, projection: { type: 'globe' } } },
   { rule: 'native-elevation-readout', platform: 'native', style: { ...clean, layers: [...clean.layers, { id: 'contour-lines', type: 'line' }] } },

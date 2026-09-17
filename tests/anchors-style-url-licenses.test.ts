@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { firstSymbolLayerId, insertUnderLabels } from '../src/anchors';
 import { resolveBasemapStyleUrl } from '../src/style-url';
-import { loadRegistry } from '../src/registry';
+import { loadRegistry } from '../src/index';
 import { buildNotices } from '../src/licenses';
 import { resolveStack } from '../src/resolve-stack';
 

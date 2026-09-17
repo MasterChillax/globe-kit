@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { loadRegistry } from '../src/registry';
+import { loadRegistry } from '../src/index';
 import { validateStyleMin, type StyleLike } from '../src/validate-style';
 
 const registry = loadRegistry();
@@ -42,8 +42,12 @@ describe('validateStyleMin — each rule fires on an injected violation (negativ
     expect(validateStyleMin(good, registry, { platform: 'web' }).map((v) => v.rule)).not.toContain('key-literal');
   });
 
-  it('flags raster sources without attribution or without tileSize', () => {
-    const bad: StyleLike = { ...good, sources: { ...good.sources, bare: { type: 'raster', tiles: ['https://example.test/{z}/{x}/{y}.png'] } } };
+  it('flags raster sources without attribution or without tileSize (when a layer draws them)', () => {
+    const bad: StyleLike = {
+      ...good,
+      sources: { ...good.sources, bare: { type: 'raster', tiles: ['https://example.test/{z}/{x}/{y}.png'] } },
+      layers: [...good.layers, { id: 'bare-layer', type: 'raster', source: 'bare' }],
+    };
     const rules = validateStyleMin(bad, registry, { platform: 'web' }).map((v) => v.rule);
     expect(rules).toContain('missing-attribution');
     expect(rules).toContain('missing-tilesize');

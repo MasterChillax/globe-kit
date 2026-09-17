@@ -8,6 +8,18 @@ export function firstSymbolLayerId(layers: readonly StyleLayerLike[]): string | 
   return hit ? hit.id : null;
 }
 
+/**
+ * Opaque fills drawn AFTER the anchor — they would paint over imagery inserted there. In OpenFreeMap dark the first
+ * symbol is `water_name`, yet `building` (opaque near-black at z12+) and aeroway fills come later; apps hide these while
+ * a satellite/night raster is visible. Lines (roads, boundaries) and symbols are kept: they read fine over imagery.
+ */
+export function fillsAboveAnchor(layers: readonly StyleLayerLike[], anchorId: string | null | undefined): string[] {
+  if (!anchorId) return [];
+  const at = layers.findIndex((l) => l.id === anchorId);
+  if (at < 0) return [];
+  return layers.slice(at + 1).filter((l) => l.type === 'fill' || l.type === 'fill-extrusion').map((l) => l.id);
+}
+
 /** Returns a new layer list with `inserted` placed just under the labels (or appended when there are none). */
 export function insertUnderLabels<T extends StyleLayerLike>(layers: readonly T[], inserted: readonly T[]): T[] {
   const anchor = firstSymbolLayerId(layers);

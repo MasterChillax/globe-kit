@@ -37,6 +37,9 @@ export function validateStyleMin(style: StyleLike, registry: Registry, opts: Val
   const v: Violation[] = [];
   const today = opts.today ?? new Date().toISOString().slice(0, 10);
   const known = registeredHosts(registry);
+  // Display rules (attribution, tileSize) only matter for sources a layer draws; a source nothing references never
+  // requests a tile (the real OpenFreeMap dark style ships one such raster). Licence rules still cover every source.
+  const drawn = new Set(style.layers.map((l) => l.source));
 
   for (const k of Object.keys(style.sky ?? {})) if (MAPBOX_SKY.test(k)) v.push({ rule: 'mapbox-sky-prop', where: 'sky', detail: `${k} is Mapbox-only; MapLibre 5.x globe sky is atmosphere-blend` });
 
@@ -54,7 +57,7 @@ export function validateStyleMin(style: StyleLike, registry: Registry, opts: Val
       }
       if (host === GIBS_HOST && (s.maxzoom ?? 0) > 8) v.push({ rule: 'gibs-maxzoom', where: `sources.${id}`, detail: `GIBS Level8 layers end at z8; maxzoom ${s.maxzoom} overzooms and reads as data` });
     }
-    if (s.type === 'raster' || s.type === 'raster-dem') {
+    if ((s.type === 'raster' || s.type === 'raster-dem') && drawn.has(id)) {
       if (!s.attribution) v.push({ rule: 'missing-attribution', where: `sources.${id}`, detail: 'raster sources must carry their provider attribution' });
       if (!s.tileSize) v.push({ rule: 'missing-tilesize', where: `sources.${id}`, detail: '256px tiles served without tileSize render one zoom blurry' });
     }

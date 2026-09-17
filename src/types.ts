@@ -32,7 +32,10 @@ export interface Provider {
   tiles?: string[];
   tileSize?: number;
   minzoom?: number;
+  /** Source maxzoom: the last zoom the provider serves tiles for. */
   maxzoom?: number;
+  /** Layer maxzoom: the zoom from which the layer is hidden (MapLibre semantics). Omit to draw at every zoom. */
+  layerMaxzoom?: number;
   bounds?: [number, number, number, number];
   opacity?: number;
   visibility?: 'visible' | 'none';

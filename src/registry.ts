@@ -1,9 +1,13 @@
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
 import type { Registry } from './types';
+import bundled from '../registry/providers.json';
 
-const REGISTRY_PATH = join(dirname(fileURLToPath(import.meta.url)), '..', 'registry', 'providers.json');
+// Client-safe on purpose: the registry is bundled as JSON data (no node:fs, no import.meta.url), so this
+// module can sit inside a browser bundle. Reading an arbitrary registry file from disk lives in ./node.
+
+/** The registry shipped with this version of the kit. */
+export function loadRegistry(): Registry {
+  return assertRegistry(bundled);
+}
 
 /** Minimal shape check — a registry that fails this is a bug in this repo, not a runtime condition. */
 export function assertRegistry(value: unknown): Registry {
@@ -24,11 +28,6 @@ export function assertRegistry(value: unknown): Registry {
     }
   }
   return r;
-}
-
-/** Load the bundled registry. Sync on purpose: consumers call it once at module init. */
-export function loadRegistry(path: string = REGISTRY_PATH): Registry {
-  return assertRegistry(JSON.parse(readFileSync(path, 'utf8')));
 }
 
 export function hostOf(url: string): string | null {

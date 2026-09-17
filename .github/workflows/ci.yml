@@ -19,6 +19,8 @@ jobs:
       - run: pnpm test
       # The gate must be able to fail: injected violations must be detected.
       - run: pnpm selftest
+      # The root entry must bundle for the browser; the negative control (injected node:fs) must fail.
+      - run: pnpm browser-check
       # No renderer dependency may ever enter this package: no maplibre-gl in dependencies, no import of it in src.
       # (Prose mentions in descriptions/comments are fine — the first version of this step matched those.)
       - run: |

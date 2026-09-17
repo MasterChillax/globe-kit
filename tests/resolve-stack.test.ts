@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { loadRegistry } from '../src/registry';
+import { loadRegistry } from '../src/index';
 import { resolveStack, type AppProfile } from '../src/resolve-stack';
 
 const registry = loadRegistry();

@@ -18,14 +18,18 @@
 
 ## 사용
 
-```ts
-import { loadRegistry, resolveStack, insertUnderLabels, validateStyleMin, buildNotices } from '@masterchillax/globe-kit';
+루트 엔트리는 **브라우저 번들 안전**이다(v0.2.0 — node 내장 import 0, `pnpm browser-check` 로 고정). 클라이언트 컴포넌트에서 바로 import 해도 되고, 서버 라우트에서 계산해 JSON 으로 내려줘도 된다.
 
-const registry = loadRegistry();
+```ts
+import { loadRegistry, resolveStack, keysFrom, firstSymbolLayerId, validateStyleMin, buildNotices } from '@masterchillax/globe-kit';
+
+const registry = loadRegistry();            // 번들된 registry/providers.json (fs 없음)
 const stack = resolveStack(registry, {
   app: 'jarvis', usage: 'personal', exposure: 'private', platform: 'web',
-  keys: (name) => process.env[`NEXT_PUBLIC_${name}`],   // ARCGIS_API_KEY, VWORLD_KEY
-  consents: [],                                           // 예: ['vworld-commercial'] (서면 있을 때만)
+  // 키는 **명시 맵**으로. Next 는 `process.env.NEXT_PUBLIC_X` 정적 참조만 인라인하므로
+  // `name => process.env['NEXT_PUBLIC_' + name]` 는 클라이언트 번들에서 항상 undefined 다.
+  keys: keysFrom({ ARCGIS_API_KEY: process.env.NEXT_PUBLIC_ARCGIS_API_KEY, VWORLD_KEY: process.env.NEXT_PUBLIC_VWORLD_KEY }),
+  consents: [],                              // 예: ['vworld-commercial'] (서면 있을 때만)
 });
 // map = new maplibregl.Map({ style: stack.styleUrl, ... })
 // map.on('load', () => { for (const [id, s] of Object.entries(stack.sources)) map.addSource(id, s);
@@ -33,6 +37,12 @@ const stack = resolveStack(registry, {
 //   if (stack.terrain) map.setTerrain(stack.terrain); });
 // stack.dropped → 화면 진단 패널에 그대로 (왜 위성이 없는지 사용자가 본다)
 ```
+
+- `std-overview`(GIBS Blue Marble, 소스 z≤8)는 레이어 `maxzoom: 9` 로 나온다 — z9 부터 숨어 벡터 지도가 드러난다(오버줌으로 지도를 덮지 않는다). `std-night` 는 모든 줌에서 그린다(도시 불빛 글로우).
+- 위성/야간 래스터가 **보이는 동안**은 `fillsAboveAnchor(map.getStyle().layers, anchor)` 가 돌려주는 fill 레이어(OFM dark 의 `building`·aeroway — 첫 symbol 뒤에 오는 불투명 fill)를 `visibility: none` 으로 숨긴다. 안 숨기면 z12+ 도시에서 영상이 검은 블록에 덮인다. 도로선·라벨은 그대로 둔다(하이브리드).
+- `validateStyleMin` 의 attribution·tileSize 규칙은 **레이어가 실제로 그리는 소스**에만 건다(OFM dark 에는 참조 없는 래스터 소스 `ne2_shaded` 가 있다). 금지 호스트·키 리터럴 규칙은 참조 여부와 무관하게 전 소스에 건다.
+- 스크립트·테스트에서 다른 레지스트리 파일을 읽으려면 `import { loadRegistryFile } from '@masterchillax/globe-kit/node'`(node 전용). 레지스트리 JSON 자체는 `@masterchillax/globe-kit/registry` 로도 import 된다.
+- 정적 린트는 **자리표시자 키**로 만든 스택에 건다: `keysFrom({ ARCGIS_API_KEY: '{ARCGIS_API_KEY}', … })`. 실제 키가 든 런타임 URL 은 `key-literal` 에 걸리는 게 맞다(키가 스타일 픽스처에 박히는 걸 막는 규칙).
 
 CI 게이트(앱 쪽): 앱의 실제 프로필로 `resolveStack` 결과 스냅샷을 픽스처와 대조하고, 최종 스타일에 `validateStyleMin(style, registry, { platform, app, today })` 이 0건인지, 그리고 위반을 주입한 사본이 **빨강**인지 둘 다 검사한다.
 

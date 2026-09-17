@@ -29,6 +29,7 @@
       "tiles": ["https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg"],
       "tileSize": 256,
       "maxzoom": 8,
+      "layerMaxzoom": 9,
       "opacity": 1,
       "visibility": "visible",
       "attribution": "NASA GIBS · Blue Marble Next Generation",

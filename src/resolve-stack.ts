@@ -12,6 +12,18 @@ export interface AppProfile {
   consents: readonly string[];
 }
 
+/**
+ * Key lookup from an explicit map. Client bundles need this shape: Next.js inlines only static
+ * `process.env.NEXT_PUBLIC_X` references, so `name => process.env['NEXT_PUBLIC_' + name]` is always
+ * undefined in the browser. Empty and blank values count as absent.
+ */
+export function keysFrom(map: Record<string, string | undefined>): AppProfile['keys'] {
+  return (name) => {
+    const v = map[name];
+    return v && v.trim() ? v : undefined;
+  };
+}
+
 export type DropReason = 'missing-key' | 'consent-required' | 'usage-not-allowed' | 'exposure-not-allowed' | 'platform' | 'denied-host';
 
 export interface RasterSourceSpec {
@@ -97,6 +109,8 @@ export function resolveStack(registry: Registry, profile: AppProfile): ResolvedS
       paint: { 'raster-opacity': p.opacity ?? 1 },
     };
     if (p.minzoom !== undefined) layer.minzoom = p.minzoom;
+    // Layer maxzoom hides the layer past it; without it a z8-only source is overzoomed all the way to z18 and covers the vector map.
+    if (p.layerMaxzoom !== undefined) layer.maxzoom = p.layerMaxzoom;
     out.layers.push(layer);
   }
   if (!out.styleUrl) throw new Error('globe-kit: no vector-style provider survived the gate — the registry must always ship a keyless basemap');

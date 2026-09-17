@@ -1,21 +1,30 @@
 {
   "name": "@masterchillax/globe-kit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "System-standard globe basemap policy: provider registry, license/key gate, stack resolver, label anchors, style lint. Pure TypeScript, no maplibre-gl dependency.",
   "license": "MIT",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./node": "./src/node.ts",
     "./registry": "./registry/providers.json"
   },
-  "files": ["src", "registry", "README.md", "LICENSE"],
+  "files": [
+    "src",
+    "registry",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "selftest": "tsx scripts/selftest.ts"
+    "selftest": "tsx scripts/selftest.ts",
+    "browser-check": "tsx scripts/browser-check.ts",
+    "browser-check": "tsx scripts/browser-check.ts"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
+    "esbuild": "^0.25.12",
     "tsx": "^4.20.0",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
