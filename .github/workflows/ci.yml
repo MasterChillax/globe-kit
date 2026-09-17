@@ -1,0 +1,23 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['v*']
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      # The gate must be able to fail: injected violations must be detected.
+      - run: pnpm selftest
+      # No renderer dependency may ever enter this package.
+      - run: '! grep -rq "maplibre-gl" package.json src'

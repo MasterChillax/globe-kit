@@ -1,0 +1,190 @@
+{
+  "version": 1,
+  "updated": "2026-09-17",
+  "record": "https://github.com/MasterChillax/kinx-monitor-dashboard/issues/66",
+  "providers": [
+    {
+      "id": "openfreemap-dark",
+      "kind": "vector-style",
+      "role": "basemap",
+      "styleUrl": "https://tiles.openfreemap.org/styles/dark",
+      "attribution": "OpenFreeMap © OpenMapTiles · Data © OpenStreetMap contributors",
+      "license": {
+        "name": "OpenFreeMap public instance — free, attribution required, no SLA",
+        "url": "https://openfreemap.org",
+        "usage": ["personal", "internal", "commercial"],
+        "exposure": ["private", "public"],
+        "verified": "2026-09-17",
+        "note": "상업 이용 문구 원문은 Astra 교차 확인 항목(#66). SLA 없음 → 앱마다 styleUrl 오버라이드 스위치 필수"
+      },
+      "platforms": ["web", "native"],
+      "cacheable": true,
+      "keyRequired": null
+    },
+    {
+      "id": "gibs-bluemarble",
+      "kind": "raster",
+      "role": "overview",
+      "layerId": "std-overview",
+      "tiles": ["https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg"],
+      "tileSize": 256,
+      "maxzoom": 8,
+      "opacity": 1,
+      "visibility": "visible",
+      "attribution": "NASA GIBS · Blue Marble Next Generation",
+      "license": {
+        "name": "NASA GIBS imagery — public domain, acknowledgement requested",
+        "url": "https://nasa-gibs.github.io/gibs-api-docs/",
+        "usage": ["personal", "internal", "commercial"],
+        "exposure": ["private", "public"],
+        "verified": "2026-09-17",
+        "note": "미러/캐시 정책 문구 없음 → R2 적재는 서면 전 보류"
+      },
+      "platforms": ["web", "native"],
+      "cacheable": true,
+      "keyRequired": null
+    },
+    {
+      "id": "gibs-black-marble",
+      "kind": "raster",
+      "role": "night",
+      "layerId": "std-night",
+      "tiles": ["https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png"],
+      "tileSize": 256,
+      "maxzoom": 8,
+      "opacity": 0.92,
+      "visibility": "none",
+      "attribution": "NASA Black Marble (VIIRS, 2016)",
+      "license": {
+        "name": "NASA GIBS imagery — public domain",
+        "url": "https://nasa-gibs.github.io/gibs-api-docs/",
+        "usage": ["personal", "internal", "commercial"],
+        "exposure": ["private", "public"],
+        "verified": "2026-09-17"
+      },
+      "platforms": ["web", "native"],
+      "cacheable": true,
+      "keyRequired": null
+    },
+    {
+      "id": "arcgis-world-imagery",
+      "kind": "raster",
+      "role": "satellite",
+      "layerId": "std-satellite",
+      "tiles": ["https://ibasemaps-api.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}?token={ARCGIS_API_KEY}"],
+      "tileSize": 256,
+      "maxzoom": 18,
+      "opacity": 0.9,
+      "visibility": "visible",
+      "attribution": "Powered by Esri · Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community",
+      "license": {
+        "name": "ArcGIS Location Platform basemap tiles — API key, 2M tiles/month free then $0.15/1k",
+        "url": "https://location.arcgis.com/pricing/",
+        "usage": ["personal", "internal", "commercial"],
+        "exposure": ["private", "public"],
+        "verified": "2026-09-17",
+        "note": "무키 server.arcgisonline.com 직접 타일은 ToS 밖(denied). 키는 referrer 바인딩"
+      },
+      "platforms": ["web", "native"],
+      "cacheable": false,
+      "keyRequired": "ARCGIS_API_KEY",
+      "keyPlacement": "query"
+    },
+    {
+      "id": "vworld-satellite",
+      "kind": "raster",
+      "role": "korea-satellite",
+      "layerId": "std-korea-satellite",
+      "tiles": ["https://api.vworld.kr/req/wmts/1.0.0/{VWORLD_KEY}/Satellite/{z}/{y}/{x}.jpeg"],
+      "tileSize": 256,
+      "minzoom": 7,
+      "maxzoom": 19,
+      "bounds": [124, 33, 132, 39],
+      "opacity": 1,
+      "visibility": "none",
+      "attribution": "© VWorld · 국토지리정보원",
+      "license": {
+        "name": "V-World 오픈API — 표출 전용, 저장·캐시 금지, 키 도메인 바인딩, 영리는 운영기관 동의",
+        "url": "https://www.vworld.kr/v4po_prcint_a001.do",
+        "usage": ["personal", "internal", "commercial"],
+        "exposure": ["private", "public"],
+        "verified": "2026-09-17",
+        "consentRequiredFor": ["commercial"],
+        "consentId": "vworld-commercial",
+        "note": "RN 은 Origin 이 없어 도메인 바인딩이 EXPO_PUBLIC 키를 못 지킴 → native 는 동의+별도 키 전엔 드롭"
+      },
+      "platforms": ["web", "native"],
+      "cacheable": false,
+      "keyRequired": "VWORLD_KEY",
+      "keyPlacement": "path"
+    },
+    {
+      "id": "vworld-hybrid",
+      "kind": "raster",
+      "role": "korea-labels",
+      "layerId": "std-korea-hybrid",
+      "tiles": ["https://api.vworld.kr/req/wmts/1.0.0/{VWORLD_KEY}/Hybrid/{z}/{y}/{x}.png"],
+      "tileSize": 256,
+      "minzoom": 7,
+      "maxzoom": 19,
+      "bounds": [124, 33, 132, 39],
+      "opacity": 1,
+      "visibility": "none",
+      "attribution": "© VWorld · 국토지리정보원",
+      "license": {
+        "name": "V-World 오픈API — 표출 전용, 저장·캐시 금지, 키 도메인 바인딩, 영리는 운영기관 동의",
+        "url": "https://www.vworld.kr/v4po_prcint_a001.do",
+        "usage": ["personal", "internal", "commercial"],
+        "exposure": ["private", "public"],
+        "verified": "2026-09-17",
+        "consentRequiredFor": ["commercial"],
+        "consentId": "vworld-commercial"
+      },
+      "platforms": ["web", "native"],
+      "cacheable": false,
+      "keyRequired": "VWORLD_KEY",
+      "keyPlacement": "path"
+    },
+    {
+      "id": "terrarium-dem",
+      "kind": "raster-dem",
+      "role": "terrain",
+      "tiles": ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],
+      "encoding": "terrarium",
+      "tileSize": 256,
+      "maxzoom": 15,
+      "attribution": "Terrain © Mapzen / source providers (tilezen joerd attribution)",
+      "license": {
+        "name": "AWS Terrain Tiles (Mapzen terrarium) — free, attribution per joerd list, no SLA",
+        "url": "https://github.com/tilezen/joerd/blob/master/docs/attribution.md",
+        "usage": ["personal", "internal", "commercial"],
+        "exposure": ["private", "public"],
+        "verified": "2026-09-17",
+        "note": "한국 구간은 외국 DEM(SRTM) — 별표1 국내 DEM 반출 조항 해당 없음. 좌표+표고값 폰 표시는 금지 → native 는 드롭"
+      },
+      "platforms": ["web"],
+      "cacheable": true,
+      "keyRequired": null
+    }
+  ],
+  "denied": [
+    { "host": "server.arcgisonline.com", "reason": "keyless Esri World_Imagery tiles are outside the ArcGIS terms — use arcgis-world-imagery with ARCGIS_API_KEY" },
+    { "host": "services.arcgisonline.com", "reason": "same as server.arcgisonline.com" },
+    { "host": "basemaps.cartocdn.com", "reason": "CARTO basemap terms (2026-08-26) require the customer's own API key; replaced by openfreemap-dark" },
+    { "host": "map1.vis.earthdata.nasa.gov", "reason": "legacy GIBS host and 2012 product — use gibs.earthdata.nasa.gov" },
+    { "host": "tiles.maps.eox.at", "reason": "Sentinel-2 cloudless is CC BY-NC-SA — not for commercial apps" },
+    { "host": "tile.googleapis.com", "reason": "Google Map Tiles: no caching, visualisation only, Korea not covered for 3D — excluded from the standard" }
+  ],
+  "waivers": [
+    { "host": "rainviewer.com", "app": "kinx", "reason": "RainViewer public API is personal/educational use only; KINX is an internal private dashboard — licence or removal pending", "issue": "kinx-monitor-dashboard#66", "expires": "2026-11-15" },
+    { "host": "submarinecablemap.com", "app": "kinx", "reason": "TeleGeography cable data is unlicensed for redistribution — annual licence or own coordinates pending (K4)", "issue": "kinx-monitor-dashboard#66", "expires": "2026-11-15" }
+  ],
+  "korea": {
+    "noElevationReadoutOnNative": true,
+    "publicDemMaxResolutionMetres": 90,
+    "labelFixtures": [
+      { "name": "동해", "lng": 131.0, "lat": 37.5, "zoom": 4, "expect": "동해" },
+      { "name": "독도", "lng": 131.87, "lat": 37.24, "zoom": 9, "expect": "독도" }
+    ]
+  }
+}
