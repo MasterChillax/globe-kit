@@ -38,12 +38,12 @@ describe('v0.2.0 — keysFrom (explicit key map for client bundles)', () => {
 });
 
 describe('v0.2.0 — overview layer zoom range', () => {
-  test('std-overview hides from z9 (source ends at z8; one overzoom level allowed) — night keeps its glow at all zooms', () => {
+  test('std-overview hides from z9 (source ends at z8; one overzoom level allowed) — night glows two levels further (v0.2.1: hidden from z10)', () => {
     const stack = resolveStack(loadRegistry(), { ...web, keys: noKeys });
     const overview = stack.layers.find((l) => l.id === 'std-overview');
     const night = stack.layers.find((l) => l.id === 'std-night');
     expect(overview?.maxzoom).toBe(9);
-    expect(night?.maxzoom).toBeUndefined();
+    expect(night?.maxzoom).toBe(10);
   });
   test('negative control: a provider without layerMaxzoom emits no layer maxzoom', () => {
     const registry = loadRegistry();

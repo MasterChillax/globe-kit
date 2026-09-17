@@ -36,6 +36,8 @@ export interface Provider {
   maxzoom?: number;
   /** Layer maxzoom: the zoom from which the layer is hidden (MapLibre semantics). Omit to draw at every zoom. */
   layerMaxzoom?: number;
+  /** Vector styles whose own TileJSON already carries the required credit — MapLibre shows it, apps must not repeat it. */
+  attributionInStyle?: boolean;
   bounds?: [number, number, number, number];
   opacity?: number;
   visibility?: 'visible' | 'none';

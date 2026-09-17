@@ -2,7 +2,7 @@ export type { Usage, Exposure, Platform, Provider, Registry, License, Denied, Wa
 // Client-safe: nothing below may reach a node built-in (tests/client-safe.test.ts, scripts/browser-check.ts).
 // Disk access lives in './node' (`@masterchillax/globe-kit/node`).
 export { loadRegistry, assertRegistry, deniedReason, hostOf } from './registry';
-export { resolveStack, keysFrom } from './resolve-stack';
+export { resolveStack, keysFrom, rasterDrawnAt } from './resolve-stack';
 export type { AppProfile, ResolvedStack, RasterSourceSpec, RasterLayerSpec, DropReason } from './resolve-stack';
 export { firstSymbolLayerId, insertUnderLabels, fillsAboveAnchor } from './anchors';
 export type { StyleLayerLike } from './anchors';

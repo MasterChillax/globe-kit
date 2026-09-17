@@ -8,6 +8,7 @@
       "kind": "vector-style",
       "role": "basemap",
       "styleUrl": "https://tiles.openfreemap.org/styles/dark",
+      "attributionInStyle": true,
       "attribution": "OpenFreeMap © OpenMapTiles · Data © OpenStreetMap contributors",
       "license": {
         "name": "OpenFreeMap public instance — free, attribution required, no SLA",
@@ -53,6 +54,7 @@
       "tiles": ["https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png"],
       "tileSize": 256,
       "maxzoom": 8,
+      "layerMaxzoom": 10,
       "opacity": 0.92,
       "visibility": "none",
       "attribution": "NASA Black Marble (VIIRS, 2016)",

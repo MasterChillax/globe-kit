@@ -51,7 +51,14 @@ export interface ResolvedStack {
   /** Ordered bottom → top; insert them under the labels with anchors.insertUnderLabels. */
   layers: RasterLayerSpec[];
   terrain: { source: string; exaggeration: number } | null;
+  /** Every included provider's credit — for THIRD_PARTY_NOTICES and tests, not for the attribution control. */
   attribution: string[];
+  /**
+   * What the app must pass as `customAttribution`: credits MapLibre cannot show by itself. Raster credits ride on
+   * their source spec (shown only while drawn) and a style with `attributionInStyle` is credited by its TileJSON,
+   * so with the shipped registry this is empty — apps append only their own credits (e.g. cable data).
+   */
+  customAttribution: string[];
   included: string[];
   dropped: { id: string; reason: DropReason }[];
 }
@@ -76,7 +83,7 @@ function gate(p: Provider, profile: AppProfile, registry: Registry): DropReason 
 
 /** Pure: registry + profile → the exact sources/layers an app may ship. Nothing else decides what is on the map. */
 export function resolveStack(registry: Registry, profile: AppProfile): ResolvedStack {
-  const out: ResolvedStack = { styleUrl: '', sources: {}, layers: [], terrain: null, attribution: [], included: [], dropped: [] };
+  const out: ResolvedStack = { styleUrl: '', sources: {}, layers: [], terrain: null, attribution: [], customAttribution: [], included: [], dropped: [] };
   const rasters: { order: number; p: Provider }[] = [];
   for (const p of registry.providers) {
     const reason = gate(p, profile, registry);
@@ -84,7 +91,11 @@ export function resolveStack(registry: Registry, profile: AppProfile): ResolvedS
     out.included.push(p.id);
     if (!out.attribution.includes(p.attribution)) out.attribution.push(p.attribution);
     const key = p.keyRequired ? profile.keys(p.keyRequired) : undefined;
-    if (p.kind === 'vector-style') { out.styleUrl = p.styleUrl!; continue; }
+    if (p.kind === 'vector-style') {
+      out.styleUrl = p.styleUrl!;
+      if (!p.attributionInStyle) out.customAttribution.push(p.attribution);
+      continue;
+    }
     const source: RasterSourceSpec = {
       type: p.kind === 'raster-dem' ? 'raster-dem' : 'raster',
       tiles: (p.tiles ?? []).map((t) => keyed(t, p, key)),
@@ -115,4 +126,10 @@ export function resolveStack(registry: Registry, profile: AppProfile): ResolvedS
   }
   if (!out.styleUrl) throw new Error('globe-kit: no vector-style provider survived the gate — the registry must always ship a keyless basemap');
   return out;
+}
+
+/** Whether a stack layer actually draws at `zoom` (MapLibre: minzoom inclusive, maxzoom exclusive). Use it to scope
+ * fillsAboveAnchor hiding to the zooms where imagery is really on screen. */
+export function rasterDrawnAt(layer: Pick<RasterLayerSpec, 'minzoom' | 'maxzoom'>, zoom: number): boolean {
+  return zoom >= (layer.minzoom ?? 0) && zoom < (layer.maxzoom ?? Infinity);
 }

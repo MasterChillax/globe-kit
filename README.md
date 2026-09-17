@@ -38,8 +38,9 @@ const stack = resolveStack(registry, {
 // stack.dropped → 화면 진단 패널에 그대로 (왜 위성이 없는지 사용자가 본다)
 ```
 
-- `std-overview`(GIBS Blue Marble, 소스 z≤8)는 레이어 `maxzoom: 9` 로 나온다 — z9 부터 숨어 벡터 지도가 드러난다(오버줌으로 지도를 덮지 않는다). `std-night` 는 모든 줌에서 그린다(도시 불빛 글로우).
-- 위성/야간 래스터가 **보이는 동안**은 `fillsAboveAnchor(map.getStyle().layers, anchor)` 가 돌려주는 fill 레이어(OFM dark 의 `building`·aeroway — 첫 symbol 뒤에 오는 불투명 fill)를 `visibility: none` 으로 숨긴다. 안 숨기면 z12+ 도시에서 영상이 검은 블록에 덮인다. 도로선·라벨은 그대로 둔다(하이브리드).
+- `std-overview`(GIBS Blue Marble, 소스 z≤8)는 레이어 `maxzoom: 9`, `std-night`(Black Marble, 소스 z≤8)는 `maxzoom: 10` 으로 나온다 — 그 줌부터 숨어 벡터 지도가 드러난다. 안 그러면 z15 에서 z8 픽셀 하나가 화면을 채워 지도가 반전된 것처럼 보인다(Jarvis 실측).
+- 위성/야간 래스터가 **실제로 그려지는 동안**(`rasterDrawnAt(layer, map.getZoom())`)은 `fillsAboveAnchor(map.getStyle().layers, anchor)` 가 돌려주는 fill 레이어(OFM dark 의 `building`·aeroway — 첫 symbol 뒤에 오는 불투명 fill)를 `visibility: none` 으로 숨긴다. 안 숨기면 z12+ 도시에서 영상이 검은 블록에 덮인다. 도로선·라벨은 그대로 둔다(하이브리드).
+- **표기**: `AttributionControl` 의 `customAttribution` 에는 `stack.customAttribution`(+ 앱 고유 크레딧)만 넘긴다 — 현 레지스트리에선 빈 배열이다. 래스터 크레딧은 소스 spec 에 실려 MapLibre 가 **켜진 소스만** 표기하고, OpenFreeMap 은 자기 TileJSON 이 표기한다(`attributionInStyle`). `stack.attribution` 전체를 join 하면 OFM 이 두 번, 꺼진 야간·지형 크레딧이 항상 붙는다. `stack.attribution` 은 THIRD_PARTY_NOTICES(`buildNotices`) 용이다.
 - `validateStyleMin` 의 attribution·tileSize 규칙은 **레이어가 실제로 그리는 소스**에만 건다(OFM dark 에는 참조 없는 래스터 소스 `ne2_shaded` 가 있다). 금지 호스트·키 리터럴 규칙은 참조 여부와 무관하게 전 소스에 건다.
 - 스크립트·테스트에서 다른 레지스트리 파일을 읽으려면 `import { loadRegistryFile } from '@masterchillax/globe-kit/node'`(node 전용). 레지스트리 JSON 자체는 `@masterchillax/globe-kit/registry` 로도 import 된다.
 - 정적 린트는 **자리표시자 키**로 만든 스택에 건다: `keysFrom({ ARCGIS_API_KEY: '{ARCGIS_API_KEY}', … })`. 실제 키가 든 런타임 URL 은 `key-literal` 에 걸리는 게 맞다(키가 스타일 픽스처에 박히는 걸 막는 규칙).
